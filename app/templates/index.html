@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block content %}
+<header class="masthead bg-primary text-white text-center">
+    <div class="container d-flex align-items-center flex-column">
+        <h1>La vraie humanité consiste à dire bonjour à un sourd.</h1>
+    </div>
+</header>
+<section class="page-section portfolio" id="portfolio">
+    <div class="container">
+
+        {% if session.name %}
+        Bienvenue {{ session.name }}!
+        {% else %}
+        <img src="{{ url_for('static',filename='assets/ASLPOSTER.JPG') }}" class="rounded mx-auto d-block"/>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

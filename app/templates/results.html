@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+{% block content %}
+<header class="masthead bg-primary text-white text-center">
+    <div class="container d-flex align-items-center flex-column">
+        <h1>Your results</h1>
+    </div>
+</header>
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">letter</th>
+        <th scope="col">score</th>
+        <th scope="col">date</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for predict in predicts %}
+        <tr>
+            <th scope="row">{{ loop.index }}</th>
+            <td>{{ predict[0] }}</td>
+            <td>
+                {% if predict[1] > 80 %}    
+                <p class="text-success">{{ predict[1] }}</p>
+                {% elif predict[1] < 81 and predict[1] > 30 %}    
+                <p class="text-warning">{{ predict[1] }}</p>
+                {% else %}    
+                <p class="text-danger">{{ predict[1] }}</p>
+                {% endif %}
+                </td>
+            <td>{{ predict[2] }}</td>
+          </tr>
+          {% endfor %}
+
+    </tbody>
+</table>
+
+
+
+
+
+
+</section>
+{% endblock %}
