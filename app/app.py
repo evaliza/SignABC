@@ -71,7 +71,8 @@ def gen(camera):
 def random_letter():
     alphabet = 'abcdefghijklmnopqrstuvwxyz'
     index = random.randint(0, 25)
-    return alphabet[index]
+    return "b"
+#return alphabet[index]
 
 # The route
 @app.route('/cam/', methods=['GET', 'POST'])
@@ -110,7 +111,7 @@ def lessons():
 @app.route('/start', methods=['GET', 'POST'])
 def upload_file():
     try:
-        fingerspell = random_letter()
+        newLetter = random_letter()
         if request.method == 'POST':
             file = request.files['file']
             if file.filename == '':
@@ -127,12 +128,18 @@ def upload_file():
                 landmarks = analyse.get_landmarks()
                 fingerspell = analyse.get_letterPredict()
                 l = request.form['letter']
+                print(("letter searched ********* : ", l))
                 print("letter : ", l)
                 if l != "":
                     predict = Predict()
                     predict.create(l,percent, session['email'], imageUpload, landmarks)
 
-            return render_template('start.html', imageUpload=imageUpload, percent=percent, landmarks=landmarks, fingerspell=fingerspell, lettersearch = l)
+            return render_template('start.html', imageUpload=imageUpload
+                                   , percent=percent, 
+                                   newLetter=newLetter,
+                                   landmarks=landmarks, 
+                                   fingerspell=fingerspell, 
+                                   lettersearched = l)
     except OSError as err:
         print("OS error: {0}".format(err))
     except ValueError:
@@ -141,7 +148,7 @@ def upload_file():
         print("Unexpected ", err, " : ", type(err))
         raise
 
-    return render_template('start.html', fingerspell=fingerspell)
+    return render_template('start.html', newLetter=newLetter)
 
 
 @app.route('/results/', methods=['GET', 'POST'])

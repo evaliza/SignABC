@@ -5,12 +5,12 @@
         <h1>Start new challenge</h1>
     </div>
 </header>
-<strong>Fingerspell the following letter: {{ fingerspell }}</strong><br>
+<strong>Fingerspell the following letter: {{ newLetter }}</strong><br>
 Upload the image of the requested letter
 <form action = "http://127.0.0.1:5000/start" method = "POST"
          enctype = "multipart/form-data">
          <input type = "file" name = "file" />
-        <input type="hidden" name="letter" value="{{ fingerspell }}">
+        <input type="hidden" name="letter" value="{{ newLetter }}">
          <input type = "submit"/>
 </form>
 <br>
@@ -19,7 +19,7 @@ Upload the image of the requested letter
     <div class="row border">
         <div class="col-md-4">
             <div class="thumbnail">
-                letter searched : {{ lettersearch }}<br>
+                letter searched : {{ lettersearched }}<br>
                 fingerspelled : {{ fingerspell }}<br>
                 prediction score : {{ percent }}%
             </div>
