@@ -1,7 +1,3 @@
-# from cgitb import html
-# from numpy import imag
-import mysql.connector  # pip install mysql-connector-python
-# import pickle
 import requests
 import os
 from werkzeug.utils import secure_filename
@@ -12,13 +8,16 @@ from model.admin import Admin
 from model.user import User
 from model.letter import Letter
 from model.predict import Predict
+from mail import Email
 import hashlib  # MD5
 from flask import Flask, render_template, redirect, request, session, Response, url_for
 from flask_session import Session
 import flask_monitoringdashboard as dashboard
+import traceback
+
 
 import os
-import sys
+
 
 app = Flask(__name__)
 
@@ -35,7 +34,7 @@ app.logger.addHandler(file_handler)
 
 
 mail_handler = SMTPHandler(
-    mailhost='127.0.0.1',
+    mailhost='127.0.0.0',
     fromaddr='server-error@domain.com',
     toaddrs=['ilizaeve@gmail.com'],
     subject='Application Error'
@@ -71,8 +70,7 @@ def gen(camera):
 def random_letter():
     alphabet = 'abcdefghijklmnopqrstuvwxyz'
     index = random.randint(0, 25)
-    return "b"
-#return alphabet[index]
+    return alphabet[index]
 
 # The route
 @app.route('/cam/', methods=['GET', 'POST'])
@@ -80,13 +78,10 @@ def cam():
     try:
         return render_template('cam.html')
 
-    except OSError as err:
-        print("OS error: {0}".format(err))
-    except ValueError:
-        print("Could not convert data to an integer.")
-    except BaseException as err:
-        print("Unexpected {err=}, {type(err)=}")
-        raise
+    except Exception as err:
+        template = "An exception has been occurred:\n{0}"
+        message = template.format(traceback.format_exc())
+        Email.sendMail("SignABC error", message)
 
     msg = ''
     return render_template('login.html', msg='')
@@ -140,13 +135,10 @@ def upload_file():
                                    landmarks=landmarks, 
                                    fingerspell=fingerspell, 
                                    lettersearched = l)
-    except OSError as err:
-        print("OS error: {0}".format(err))
-    except ValueError:
-        print("Could not convert data to an integer.")
-    except BaseException as err:
-        print("Unexpected ", err, " : ", type(err))
-        raise
+    except Exception as err:
+        template = "An exception has been occurred:\n{0}"
+        message = template.format(traceback.format_exc())
+        Email.sendMail("SignABC error", message)
 
     return render_template('start.html', newLetter=newLetter)
 
@@ -159,6 +151,7 @@ def results():
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
     try:
+        # raise ValueError('A very specific bad thing happened.') # lever une exception pour test(mail)
         if request.method == 'POST' and 'email' in request.form and 'password' in request.form:
             email = request.form['email'].strip()
             pwd = request.form['password'].strip()
@@ -173,13 +166,10 @@ def login():
                 session['role'] = raw[2]
                 return redirect(url_for('cam', code=302))
 
-    except OSError as err:
-        print("OS error: {0}".format(err))
-    except ValueError:
-        print("Could not convert data to an integer.")
-    except BaseException as err:
-        print("Unexpected ", err, " : ", type(err))
-        raise
+    except Exception as err:
+        template = "An exception has been occurred:\n{0}"
+        message = template.format(traceback.format_exc())
+        Email.sendMail("SignABC error", message)
 
     return render_template('login.html')
 
@@ -253,25 +243,3 @@ def index():
 if __name__ == "__main__":
     app.debug = True
     app.run(host='0.0.0.0')
-
-
-
-# import smtplib
-# from email.mime.multipart import MIMEMultipart
-# from email.mime.text import MIMEText
-
-# def sendMail(subject, message):
-#     msg = MIMEMultipart()
-#     msg['From'] = 'ilizaeve@gmail.com'
-#     msg['To'] = 'ilizaeve@gmail.com'
-#     msg['Subject'] = subject
-#     message = message
-#     msg.attach(MIMEText(message))
-#     mailserver = smtplib.SMTP('smtp.gmail.com', 587)
-#     mailserver.ehlo()
-#     mailserver.starttls()
-#     mailserver.ehlo()
-#     mailserver.login('ilizaeve@gmail.com', 'hdfykpdsoireyedl')
-#     mailserver.sendmail('ilizaeve@gmail.com', 'ilizaeve@gmail.com', msg.as_string())
-#     mailserver.quit()
-#     pass
