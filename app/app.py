@@ -14,6 +14,8 @@ from flask import Flask, render_template, redirect, request, session, Response, 
 from flask_session import Session
 import flask_monitoringdashboard as dashboard
 import traceback
+from datetime import datetime
+
 
 
 import os
@@ -76,15 +78,18 @@ def random_letter():
 @app.route('/cam/', methods=['GET', 'POST'])
 def cam():
     try:
+        #raise ValueError('A very specific bad thing happened.')
         return render_template('cam.html')
 
     except Exception as err:
-        template = "An exception has been occurred:\n{0}"
-        message = template.format(traceback.format_exc())
+        template = "{0}: An exception of type {1} occurred. Arguments:{2!r}"
+        message = template.format(str(datetime.now()), type(err).__name__, err.args)
+        app.logger.error(message)
+        template = "{0}: An exception has been occurred:\n{1}"
+        message = template.format(str(datetime.now()), traceback.format_exc())
         Email.sendMail("SignABC error", message)
+        return render_template('404.html')
 
-    msg = ''
-    return render_template('login.html', msg='')
 
 
 @app.route('/video_feed')
@@ -145,8 +150,15 @@ def upload_file():
 
 @app.route('/results/', methods=['GET', 'POST'])
 def results():
-    predict = Predict()
-    return render_template('results.html', predicts=predict.selectByUser(session['name']))
+    try:
+        predict = Predict()
+        return render_template('results.html', predicts=predict.selectByUser(session['name']))
+    
+    except Exception as err:
+        template = "An exception has been occurred:\n{0}"
+        message = template.format(traceback.format_exc())
+        Email.sendMail("SignABC error", message)
+    
 
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
@@ -175,10 +187,10 @@ def login():
 
 
 @app.route('/create_user/', methods=['GET', 'POST'])
-def create_user():
-    admin = Admin()
-    req = admin.getRole()
+def create_user():    
     try:
+        admin = Admin()
+        req = admin.getRole()
         if request.method == 'POST' and 'email' in request.form and 'password' in request.form:
             name = request.form['name']
             lastname = request.form['lastname']
@@ -206,27 +218,36 @@ def create_user():
                     return render_template('create_user.html', roles=req, err=1)
 
                 return redirect(url_for('list_user', code=302))
-    except OSError as err:
-        print("OS error: {0}".format(err))
-    except ValueError:
-        print("Could not convert data to an integer.")
-    except BaseException as err:
-        print(f"Unexpected {err=}, {type(err)=}")
-        raise
+    
+
+        return render_template('create_user.html', roles=req)
+
+    except Exception as err:
+        template = "An exception has been occurred:\n{0}"
+        message = template.format(traceback.format_exc())
+        Email.sendMail("SignABC error", message)
 
     
-    return render_template('create_user.html', roles=req)
 
 @app.route('/list_user/', methods=['GET', 'POST'])
 def list_user():
-    admin = Admin()
-    return render_template('list_user.html', users=admin.selectUser())
+    try:
+        admin = Admin()
+        return render_template('list_user.html', users=admin.selectUser())
+    except Exception as err:
+        template = "An exception has been occurred:\n{0}"
+        message = template.format(traceback.format_exc())
+        Email.sendMail("SignABC error", message)
 
 
 @app.route('/monotoring/', methods=['GET', 'POST'])
 def monotoring():
-    return render_template('monotoring.html')
-
+    try:
+        return render_template('monotoring.html')
+    except Exception as err:
+        template = "An exception has been occurred:\n{0}"
+        message = template.format(traceback.format_exc())
+        Email.sendMail("SignABC error", message)
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
