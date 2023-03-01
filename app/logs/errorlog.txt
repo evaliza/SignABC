@@ -3,3 +3,10 @@ message detail
 message berreur
 message berreur
 message berreur
+A very specific bad thing happened.
+A very specific bad thing happened.
+An exception of type ValueError occurred. Arguments:
+('A very specific bad thing happened.',)
+2023-02-28 22:48:43.567438: An exception of type ValueError occurred. Arguments:('A very specific bad thing happened.',)
+2023-02-28 22:54:11.835936: An exception of type ValueError occurred. Arguments:('A very specific bad thing happened.',)
+2023-02-28 23:00:14.217810: An exception of type ValueError occurred. Arguments:('A very specific bad thing happened.',)

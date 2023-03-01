@@ -70,7 +70,7 @@ def gen(camera):
             + b'\r\n\r\n')
 
 def random_letter():
-    alphabet = 'abcdefghijklmnopqrstuvwxyz'
+    alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     index = random.randint(0, 25)
     return alphabet[index]
 
